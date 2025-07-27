@@ -28,8 +28,16 @@ import { noteSchema } from "~/schemas/notes";
 import { NotesGridSkeleton } from "~/components/notes/note-skeleton";
 
 export async function loader({ request }: LoaderFunctionArgs) {
+  console.log(`
+    
+    
+    loader in notes.index(routes) called : ${JSON.stringify(request)}
+    
+    
+    `)
   const userId = await requireUserId(request);
   const { notes } = await getNotesByUserId(userId);
+  console.log(notes)
   return json({ notes });
 }
 
@@ -63,7 +71,7 @@ export async function action({ request }: ActionFunctionArgs) {
       ...result.data,
       userId,
     });
-
+    console.log("note:",note.createdAt,note.title)
     return json({ success: true, note });
   } catch (error) {
     console.error("Failed to create note:", error);
@@ -76,6 +84,7 @@ export default function NotesIndexPage() {
   const [isOpen, setIsOpen] = useState(false);
   const navigation = useNavigation();
   const isLoading = navigation.state === "loading";
+  console.log("notes fe",notes)
   // Reset the success handled flag when navigation change
   return (
     <div className="h-full min-h-screen bg-background">

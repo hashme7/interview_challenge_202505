@@ -40,7 +40,9 @@ export const notes = pgTable("notes", {
     .notNull(),
   title: text("title").notNull(),
   description: text("description"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
 });
 
 /**

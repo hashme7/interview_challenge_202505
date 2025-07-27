@@ -1,9 +1,10 @@
 import { db, notes, type Note, type NewNote } from "~/db/schema";
-import { sql } from "drizzle-orm";
+import { sql, desc } from "drizzle-orm";
 
 export async function createNote(data: NewNote): Promise<Note> {
-  const [note] = await db.insert(notes).values(data).returning();
+    const [note] = await db.insert(notes).values(data).returning()
   return note;
+  
 }
 
 export async function getNoteById(id: number): Promise<Note | null> {

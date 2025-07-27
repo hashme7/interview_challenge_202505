@@ -58,7 +58,7 @@ export default function LoginPage() {
   }>();
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
-
+  console.log("on Login page....")
   return (
     <LoginForm
       errors={actionData?.errors}

@@ -33,6 +33,7 @@ export function NoteCard({ note }: NoteCardProps) {
       <CardFooter className="flex-none border-t pt-4">
         <p className="text-xs text-muted-foreground">
           {formatRelativeTime(note.createdAt)}
+          {note.createdAt}
         </p>
       </CardFooter>
     </Card>
