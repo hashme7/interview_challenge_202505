@@ -1,5 +1,10 @@
 import { useEffect, useRef } from "react";
-import { Form, useActionData, useNavigation } from "@remix-run/react";
+import {
+  Form,
+  useActionData,
+  useNavigate,
+  useNavigation,
+} from "@remix-run/react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
@@ -16,6 +21,7 @@ export function NoteForm({ defaultValues = {}, onSuccess }: NoteFormProps) {
     success: boolean;
     errors?: Record<string, string[]>;
   }>();
+  const navigate = useNavigate();
   const navigation = useNavigation();
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -24,7 +30,9 @@ export function NoteForm({ defaultValues = {}, onSuccess }: NoteFormProps) {
   useEffect(() => {
     if (actionData?.success) {
       formRef.current?.reset();
+      console.log("on success called Hashim");
       onSuccess?.();
+      navigate(".", { replace: true });
     }
   }, [actionData?.success, onSuccess]);
 

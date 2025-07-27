@@ -13,20 +13,12 @@ import { getUserId } from "~/services/session.server";
 import "~/styles/tailwind.css";
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  console.log(`
-    
-    
-    Loader called ${JSON.stringify(request)}
-    
-    
-    `)
   const userId = await getUserId(request);
   return json({ isAuthenticated: !!userId });
 }
 
 export default function App() {
   const { isAuthenticated } = useLoaderData<typeof loader>();
-  console.log("App component")
   return (
     <html lang="en" className="h-full">
       <head>

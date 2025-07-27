@@ -1,5 +1,5 @@
 import { db, notes, type Note, type NewNote } from "~/db/schema";
-import { sql, desc } from "drizzle-orm";
+import { sql, desc, eq, getTableColumns } from "drizzle-orm";
 
 export async function createNote(data: NewNote): Promise<Note> {
     const [note] = await db.insert(notes).values(data).returning()
@@ -17,17 +17,40 @@ export async function getNoteById(id: number): Promise<Note | null> {
 
 export async function getNotesByUserId(
   userId: number,
-  { limit = 10 }: { limit?: number } = {}
-): Promise<{ notes: Note[] }> {
-  const notesList = await db
-    .select()
+  { limit = 10 }: { limit?: number } = {},
+  page:number
+): Promise<{ notes: Note[],count:number }> {
+  // const notesList = await db
+  //   .select()
+  //   .from(notes)
+  //   .where(sql`${notes.userId} = ${userId}`)
+  //   .orderBy(desc(notes.createdAt))
+  //   .limit(limit);
+
+  // const filteredNotes = db
+  //   .$with("filtered_notes")
+  //   .as(db.select().from(notes).where(eq(notes.userId, userId)));
+
+  // Step 2: Query with pagination and count
+  // Get total count
+  const [{ count }] = await db
+    .select({ count: sql<number>`COUNT(*)` })
+    .from(notes)
+    .where(sql`${notes.userId} = ${userId}`);
+
+  // Get paginated data
+  const result = await db
+    .select(getTableColumns(notes))
     .from(notes)
     .where(sql`${notes.userId} = ${userId}`)
     .orderBy(desc(notes.createdAt))
-    .limit(limit);
-
+    .limit(limit)
+    .offset((page||1 -1) * limit);
+  
+  console.log("result", result);
   return {
-    notes: notesList,
+    notes: result,
+    count
   };
 }
 

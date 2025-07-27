@@ -28,15 +28,10 @@ import { noteSchema } from "~/schemas/notes";
 import { NotesGridSkeleton } from "~/components/notes/note-skeleton";
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  console.log(`
-    
-    
-    loader in notes.index(routes) called : ${JSON.stringify(request)}
-    
-    
-    `)
   const userId = await requireUserId(request);
-  const { notes } = await getNotesByUserId(userId);
+  const url = new URL(request.url);
+  const page = Number(url.searchParams.get("page")) ?? 1;
+  const { notes } = await getNotesByUserId(userId, { limit: 12 },page);
   console.log(notes)
   return json({ notes });
 }
@@ -84,7 +79,8 @@ export default function NotesIndexPage() {
   const [isOpen, setIsOpen] = useState(false);
   const navigation = useNavigation();
   const isLoading = navigation.state === "loading";
-  console.log("notes fe",notes)
+  console.log("isloding",isLoading,isOpen);
+  
   // Reset the success handled flag when navigation change
   return (
     <div className="h-full min-h-screen bg-background">
@@ -111,6 +107,7 @@ export default function NotesIndexPage() {
           </PageHeader>
 
           <Separator />
+          { isOpen && <p>Hashim</p>}
 
           {isOpen ? (
             <Card>
