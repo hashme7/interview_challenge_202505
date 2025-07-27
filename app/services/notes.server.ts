@@ -23,6 +23,7 @@ export async function getNotesByUserId(
     .select()
     .from(notes)
     .where(sql`${notes.userId} = ${userId}`)
+    .orderBy(desc(notes.createdAt))
     .limit(limit);
 
   return {
