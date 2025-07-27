@@ -23,61 +23,44 @@ export function formatDate(date: Date | string): string {
     console.error("Date formatting error:", error);
     return "Invalid date";
   }
-  
 }
 
 /**
  * Format a date to a relative string (e.g., "2 days ago", "just now")
  */
 export function formatRelativeTime(date: Date | string): string {
-  console.log("to local string", date.toLocaleString());
-  // console.log("Timezone:", Intl.DateTimeFormat().resolvedOptions().timeZone);
-  // console.log("Current time:", new Date().toLocaleString());
-  // console.log("Current UTC:", new Date().toISOString());
-  // console.log(`type of :${typeof date}`)
-  
   const dateObj = typeof date === "string" ? new Date(date) : date;
+  if (isNaN(dateObj.getTime())) return "Invalid date";
 
-  const formatter = new Intl.DateTimeFormat("en-US", {
-    timeZone: "Asia/Kolkata",
-    hour12: false,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  });
+  const now = new Date();
+  const diffInSeconds = Math.floor((dateObj.getTime() - now.getTime()) / 1000);
 
-  const nowIST = new Date();
-  const targetIST = new Date(formatter.format(dateObj));
+  const thresholds = {
+    minute: 60,
+    hour: 60 * 60,
+    day: 60 * 60 * 24,
+    month: 60 * 60 * 24 * 30,
+  };
 
-  const diffInSeconds = Math.floor(
-    (targetIST.getTime() - nowIST.getTime()) / 1000
-  );
-  const diffInMinutes = Math.round(diffInSeconds / 60);
-  const diffInHours = Math.round(diffInMinutes / 60);
-  const diffInDays = Math.round(diffInHours / 24);
+  const absDiff = Math.abs(diffInSeconds);
 
-  if (Math.abs(diffInDays) > 30) {
-    console.log("diff in days greater than 30");
-    
+  if (absDiff >= thresholds.month) {
     return formatDate(dateObj);
-  }
-
-  if (Math.abs(diffInDays) > 0) {
-    console.log("diff in days",diffInDays)
-    return RELATIVE_FORMATTER.format(diffInDays, "day");
-  }
-
-  if (Math.abs(diffInHours) > 0) {
-    console.log("diff in minutes..")
-    return RELATIVE_FORMATTER.format(diffInHours, "hour");
-  }
-
-  if (Math.abs(diffInMinutes) > 0) {
-    console.log("diff in minutes")
-    return RELATIVE_FORMATTER.format(diffInMinutes, "minute");
+  } else if (absDiff >= thresholds.day) {
+    return RELATIVE_FORMATTER.format(
+      Math.round(diffInSeconds / thresholds.day),
+      "day"
+    );
+  } else if (absDiff >= thresholds.hour) {
+    return RELATIVE_FORMATTER.format(
+      Math.round(diffInSeconds / thresholds.hour),
+      "hour"
+    );
+  } else if (absDiff >= thresholds.minute) {
+    return RELATIVE_FORMATTER.format(
+      Math.round(diffInSeconds / thresholds.minute),
+      "minute"
+    );
   }
 
   return "just now";
