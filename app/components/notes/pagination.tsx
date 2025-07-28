@@ -7,7 +7,7 @@ export interface PaginationProps {
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
-  showPageNumbers?: number; // How many page numbers to show around current page
+  showPageNumbers?: number;
   className?: string;
 }
 

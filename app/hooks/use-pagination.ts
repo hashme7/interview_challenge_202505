@@ -7,6 +7,7 @@ export function usePagination() {
 
   const currentPage = Number(searchParams.get("page")) || 1;
   const searchQuery = searchParams.get("search") || "";
+  const showFavoritesOnly = searchParams.get("favorites") === "true";
 
   const goToPage = useCallback(
     (page: number) => {
@@ -19,11 +20,15 @@ export function usePagination() {
       if (page > 1) {
         params.set("page", page.toString());
       }
+      console.log(showFavoritesOnly, "showFavoritesOnly");
+      if (showFavoritesOnly) {
+        params.set("favorites", "true");
+      }
 
       const search = params.toString();
       navigate(`/notes${search ? `?${search}` : ""}`, { replace: true });
     },
-    [navigate, searchQuery]
+    [navigate, searchQuery, showFavoritesOnly]
   );
 
   return {

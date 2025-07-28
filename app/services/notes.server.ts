@@ -18,15 +18,23 @@ export async function getNotesByUserId(
   userId: number,
   { limit = 12 }: { limit?: number } = {},
   query: string,
-  page: number = 1
+  page: number = 1,
+  showFavoriteOnly: boolean
 ): Promise<{ notes: Note[]; count: number }> {
   const offset = page * limit - limit;
 
   const searchFilter = query
     ? sql`(${notes.title} ILIKE ${"%" + query + "%"})`
     : undefined;
+  const favoriteFilter = showFavoriteOnly
+    ? sql`${notes.isFavorite} = true`
+    : undefined;
 
-  const whereClause = and(sql`${notes.userId} = ${userId}`, searchFilter);
+  const whereClause = and(
+    sql`${notes.userId} = ${userId}`,
+    searchFilter,
+    favoriteFilter
+  );
 
   const [{ count }] = await db
     .select({ count: sql<number>`COUNT(*)` })

@@ -30,25 +30,29 @@ import {
 import { Separator } from "~/components/ui/separator";
 import { noteSchema } from "~/schemas/notes";
 import { NotesGridSkeleton } from "~/components/notes/note-skeleton";
+import { FavoritesToggle } from "~/components/notes/favorites-toggle";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const userId = await requireUserId(request);
   const url = new URL(request.url);
   const page = Number(url.searchParams.get("page")) || 1;
   const query = url.searchParams.get("search") ?? "";
+  const showFavoritesOnly = url.searchParams.get("favorites") === "true";
   const limit = 12;
 
   const { notes, count } = await getNotesByUserId(
     userId,
     { limit },
     query,
-    page
+    page,
+    showFavoritesOnly
   );
   const totalPages = Math.ceil(count / limit);
   console.log("totla pages", notes.length, totalPages, count, page);
   return json({
     notes,
     searchQuery: query,
+    showFavoritesOnly,
     pagination: {
       currentPage: page,
       totalPages,
@@ -98,7 +102,8 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function NotesIndexPage() {
-  const { notes, searchQuery, pagination } = useLoaderData<typeof loader>();
+  const { notes, searchQuery, pagination, showFavoritesOnly } =
+    useLoaderData<typeof loader>();
   const { goToPage } = usePagination();
   const [isOpen, setIsOpen] = useState(false);
   const navigation = useNavigation();
@@ -136,7 +141,10 @@ export default function NotesIndexPage() {
 
           {/* Search Bar and Pagination Info */}
           <div className="flex items-center justify-between">
-            <SearchBar />
+            <div className="flex gap-3">
+              <SearchBar />
+              <FavoritesToggle />
+            </div>
             {pagination.totalItems > 0 && (
               <PaginationInfo
                 currentPage={pagination.currentPage}

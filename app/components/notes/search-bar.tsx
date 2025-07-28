@@ -9,6 +9,9 @@ export function SearchBar() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [query, setQuery] = useState(searchParams.get("search") || "");
+  const showFavoritesOnly = searchParams.get("favorites") === "true";
+
+  console.log(showFavoritesOnly);
 
   // Debounce search
   useEffect(() => {
@@ -20,6 +23,9 @@ export function SearchBar() {
 
       if (query.trim()) {
         params.set("page", "1");
+      }
+      if (showFavoritesOnly) {
+        params.set("favorites", "true");
       }
 
       const search = params.toString();
