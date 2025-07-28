@@ -8,6 +8,7 @@ import {
   timestamp,
   integer,
   boolean,
+  index,
 } from "drizzle-orm/pg-core";
 import { relations, sql } from "drizzle-orm";
 import { type InferSelectModel, type InferInsertModel } from "drizzle-orm";
@@ -40,18 +41,24 @@ export const users = pgTable("users", {
 /**
  * Notes table schema
  */
-export const notes = pgTable("notes", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id")
-    .references(() => users.id)
-    .notNull(),
-  title: text("title").notNull(),
-  description: text("description"),
-  createdAt: timestamp("created_at", { withTimezone: true })
-    .defaultNow()
-    .notNull(),
-  isFavorite: boolean().default(false).notNull(),
-});
+export const notes = pgTable(
+  "notes",
+  {
+    id: serial("id").primaryKey(),
+    userId: integer("user_id")
+      .references(() => users.id)
+      .notNull(),
+    title: text("title").notNull(),
+    description: text("description"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    isFavorite: boolean().default(false).notNull(),
+  },
+  (notes) => ({
+    titleIdx: index("title_idx").on(notes.title),
+  })
+);
 
 /**
  * Relations configuration

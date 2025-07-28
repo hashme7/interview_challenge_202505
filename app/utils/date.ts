@@ -1,7 +1,7 @@
 const DATE_FORMATTER = new Intl.DateTimeFormat("en-US", {
   dateStyle: "medium",
   timeStyle: "short",
-  timeZone: "Asia/Kolkata",
+  // timeZone: "Asia/Kolkata",
 });
 
 const RELATIVE_FORMATTER = new Intl.RelativeTimeFormat("en-US", {
