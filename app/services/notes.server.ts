@@ -2,9 +2,8 @@ import { db, notes, type Note, type NewNote } from "~/db/schema";
 import { sql, desc, eq, getTableColumns } from "drizzle-orm";
 
 export async function createNote(data: NewNote): Promise<Note> {
-    const [note] = await db.insert(notes).values(data).returning()
+  const [note] = await db.insert(notes).values(data).returning();
   return note;
-  
 }
 
 export async function getNoteById(id: number): Promise<Note | null> {
@@ -18,8 +17,8 @@ export async function getNoteById(id: number): Promise<Note | null> {
 export async function getNotesByUserId(
   userId: number,
   { limit = 10 }: { limit?: number } = {},
-  page:number
-): Promise<{ notes: Note[],count:number }> {
+  page: number
+): Promise<{ notes: Note[]; count: number }> {
   // const notesList = await db
   //   .select()
   //   .from(notes)
@@ -45,13 +44,37 @@ export async function getNotesByUserId(
     .where(sql`${notes.userId} = ${userId}`)
     .orderBy(desc(notes.createdAt))
     .limit(limit)
-    .offset((page||1 -1) * limit);
-  
-  console.log("result", result);
+    .offset((page || 1 - 1) * limit);
   return {
     notes: result,
-    count
+    count,
   };
+}
+
+export async function toggleNoteFavorite(
+  noteId: number,
+  userId: number
+): Promise<Note | null> {
+  const existingNote = await db
+    .select()
+    .from(notes)
+    .where(sql`${notes.id} = ${noteId} AND ${notes.userId} = ${userId}`)
+    .limit(1);
+
+  if (existingNote.length === 0) {
+    return null; // Note not found or doesn't belong to user
+  }
+
+  // Toggle the favorite status
+  const [updatedNote] = await db
+    .update(notes)
+    .set({
+      isFavorite: sql`NOT ${notes.isFavorite}`, // Toggle the boolean value
+    })
+    .where(sql`${notes.id} = ${noteId} AND ${notes.userId} = ${userId}`)
+    .returning();
+
+  return updatedNote || null;
 }
 
 export async function updateNote(

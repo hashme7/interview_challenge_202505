@@ -32,8 +32,7 @@ export async function getUserSession(request: Request) {
 }
 
 export async function getUserId(request: Request) {
-  console.log("request headers cookie",request.headers.get("Cookie"));
-  const session = await storage.getSession(request.headers.get("Cookie"));
+  const session = await storage.getSession(request.headers.get("cookie"));
   const userId = session.get("userId");
   return userId;
 }
@@ -44,9 +43,10 @@ export async function requireUserId(
 ) {
   const session = await getUserSession(request);
   const userId = session.get("userId");
+  console.log(userId);
   if (!userId || typeof userId !== "number") {
     const searchParams = new URLSearchParams([["redirectTo", redirectTo]]);
-    console.log(`Redirected to /login${searchParams}`)
+    console.log(`Redirected to /login${searchParams}`);
     throw redirect(`/login?${searchParams}`);
   }
   return userId;

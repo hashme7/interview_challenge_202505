@@ -29,14 +29,15 @@ import { NotesGridSkeleton } from "~/components/notes/note-skeleton";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const userId = await requireUserId(request);
+  console.log("userId from loader of notes loading", userId);
   const url = new URL(request.url);
   const page = Number(url.searchParams.get("page")) ?? 1;
-  const { notes } = await getNotesByUserId(userId, { limit: 12 },page);
-  console.log(notes)
+  const { notes } = await getNotesByUserId(userId, { limit: 12 }, page);
   return json({ notes });
 }
 
 export async function action({ request }: ActionFunctionArgs) {
+  console.log("action to create note", request.headers.get("cookie"));
   const userId = await requireUserId(request);
 
   if (request.method !== "POST") {
@@ -66,7 +67,6 @@ export async function action({ request }: ActionFunctionArgs) {
       ...result.data,
       userId,
     });
-    console.log("note:",note.createdAt,note.title)
     return json({ success: true, note });
   } catch (error) {
     console.error("Failed to create note:", error);
@@ -79,8 +79,8 @@ export default function NotesIndexPage() {
   const [isOpen, setIsOpen] = useState(false);
   const navigation = useNavigation();
   const isLoading = navigation.state === "loading";
-  console.log("isloding",isLoading,isOpen);
-  
+  console.log("isloding", isLoading, isOpen);
+
   // Reset the success handled flag when navigation change
   return (
     <div className="h-full min-h-screen bg-background">
@@ -107,7 +107,7 @@ export default function NotesIndexPage() {
           </PageHeader>
 
           <Separator />
-          { isOpen && <p>Hashim</p>}
+          {isOpen && <p>Hashim</p>}
 
           {isOpen ? (
             <Card>

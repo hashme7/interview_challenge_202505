@@ -12,8 +12,10 @@ export interface AuthContext {
  * Returns JSON response for unauthorized access
  */
 export async function requireAuthApi(request: Request) {
+  console.log("require Auth", JSON.stringify(request));
   const userId = await getUserId(request);
   if (!userId) {
+    console.log("unauthorized.....", userId);
     throw json({ error: "Unauthorized" }, { status: 401 });
   }
 

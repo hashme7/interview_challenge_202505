@@ -3,7 +3,7 @@ import { createCookieSessionStorage } from "@remix-run/node";
 // Session configuration
 export const sessionStorage = createCookieSessionStorage({
   cookie: {
-    name: "__session", // use unique name for better security
+    name: "notes_session", // use unique name for better security
     httpOnly: true, // prevents JavaScript access to cookie
     path: "/", // cookie is available for all routes
     sameSite: "lax", // CSRF protection
@@ -15,6 +15,7 @@ export const sessionStorage = createCookieSessionStorage({
 // Get the session from the request
 export async function getSession(request: Request) {
   const cookie = request.headers.get("Cookie");
+  console.log("********:cookie", cookie);
   return sessionStorage.getSession(cookie);
 }
 
@@ -22,6 +23,7 @@ export async function getSession(request: Request) {
 export async function createUserSession(userId: number, redirectTo: string) {
   const session = await sessionStorage.getSession();
   session.set("userId", userId);
+  session.set("sampledata", "hashim");
 
   return new Response(null, {
     status: 302,
@@ -35,7 +37,10 @@ export async function createUserSession(userId: number, redirectTo: string) {
 // Get the logged-in user's ID from the session
 export async function getUserId(request: Request): Promise<number | null> {
   const session = await getSession(request);
+  console.log("sesion entries", session.data);
+
   const userId = session.get("userId");
+  console.log(userId, "userId", session.get("sampledata"));
   return userId || null;
 }
 
