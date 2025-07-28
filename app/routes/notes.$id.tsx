@@ -3,15 +3,16 @@ import { useLoaderData, useNavigation } from "@remix-run/react";
 import { NoteDetail } from "~/components/notes/note-detail";
 import { NoteDetailSkeleton } from "~/components/notes/note-detail-skeleton";
 import { getNoteById } from "~/services/notes.server";
+import { requireUserId } from "~/services/session.server";
 
-export async function loader({ params }: LoaderFunctionArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
   const noteId = parseInt(params.id || "", 10);
-
+  const userId = await requireUserId(request);
   if (isNaN(noteId)) {
     throw new Response("Invalid note ID", { status: 400 });
   }
 
-  const note = await getNoteById(noteId);
+  const note = await getNoteById(noteId, userId);
   if (!note) {
     throw new Response("Note not found", { status: 404 });
   }

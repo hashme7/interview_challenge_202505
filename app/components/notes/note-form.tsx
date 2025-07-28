@@ -30,7 +30,6 @@ export function NoteForm({ defaultValues = {}, onSuccess }: NoteFormProps) {
   useEffect(() => {
     if (actionData?.success) {
       formRef.current?.reset();
-      console.log("on success called Hashim");
       onSuccess?.();
       navigate(".", { replace: true });
     }

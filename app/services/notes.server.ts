@@ -6,11 +6,14 @@ export async function createNote(data: NewNote): Promise<Note> {
   return note;
 }
 
-export async function getNoteById(id: number): Promise<Note | null> {
+export async function getNoteById(
+  id: number,
+  userId: number
+): Promise<Note | null> {
   const [note] = await db
     .select()
     .from(notes)
-    .where(sql`${notes.id} = ${id}`);
+    .where(sql`${notes.id} = ${id} AND ${notes.userId} = ${userId}`);
   return note || null;
 }
 
